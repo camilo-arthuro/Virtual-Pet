@@ -6,6 +6,10 @@ import cat.itacademy.s05.t02.Virtual_Pet.repository.PersonRepository;
 import cat.itacademy.s05.t02.Virtual_Pet.repository.PetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,7 +28,26 @@ public class PersonService {
     @Autowired
     private PetRepository petRepository;
 
-    //private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    @Autowired
+    private JWTService jwtService;
+
+    @Autowired
+    AuthenticationManager authManager;
+
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
+    public String verify(String userName, String userPassword) {
+        // public String verify(Person user)
+        Authentication authentication = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(userName, userPassword));
+        // new UsernamePasswordAuthenticationToken(user.getUserName(), user.getUserPassword()))
+        if (authentication.isAuthenticated()) {
+            return jwtService.generateToken(userName);
+            // return jwtService.generateToken(user.getUserName());
+        } else {
+            return "fail";
+        }
+    }
 
     public Person createUser(String name, String password, String role){
         Person user = new Person();
@@ -35,8 +58,8 @@ public class PersonService {
 
     public void userInfo(Person user, String name, String password, String role) {
         user.setUserName(name);
-        //user.setUserPassword(encoder.encode(password));
-        user.setUserPassword(password);
+        user.setUserPassword(encoder.encode(password));
+        //user.setUserPassword(password);
         user.setUserRole(role);
         user.setPetList(new ArrayList<>());
         user.setCapacity("AVAILABLE_PLACES");
@@ -63,6 +86,5 @@ public class PersonService {
                 .findFirst()
                 .orElse(null);
     }
-
 
 }

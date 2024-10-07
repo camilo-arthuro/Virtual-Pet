@@ -23,6 +23,14 @@ public class AppController {
     @Autowired
     private PetService petService;
 
+    @PostMapping("/login")
+    public String login(@RequestBody Map<String, String> payload) {
+        String userName = payload.get("userName");
+        String userPassword = payload.get("userPassword");
+
+        return personService.verify(userName, userPassword);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<Person> register(@RequestBody Map<String, String> payload) {
         String userName = payload.get("userName");
