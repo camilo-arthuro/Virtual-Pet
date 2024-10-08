@@ -6,8 +6,11 @@ import cat.itacademy.s05.t02.Virtual_Pet.service.PersonService;
 import cat.itacademy.s05.t02.Virtual_Pet.service.PetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -32,19 +35,28 @@ public class AppController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Person> register(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<?> register(@RequestBody Map<String, String> payload) {
         String userName = payload.get("userName");
         String userPassword = payload.get("userPassword");
         String userRole = payload.get("userRole");
-        Person newUser = personService.createUser(userName, userPassword, userRole);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        try {
+            Person newUser = personService.createUser(userName, userPassword, userRole);
+            return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("The user name is already taken, please choose another one. ");
+        }
     }
 
-    @PostMapping("/create/{userId}")
-    public ResponseEntity<Person> createPet(@PathVariable Long userId, @RequestBody Map<String, String> payload) {
+    @PostMapping("/create")
+    public ResponseEntity<Person> createPet(@RequestBody Map<String, String> payload, Authentication authentication) {
+        String userName = authentication.getName();
+        Long userId = personService.getUserId(userName);
+
         String petName = payload.get("petName");
         String petColor = payload.get("petColor");
         String petBreed = payload.get("petBreed");
+
         Person newOwner = petService.createPet(userId,petName,petColor,petBreed);
         return new ResponseEntity<>(newOwner, HttpStatus.CREATED);
     }
@@ -95,6 +107,15 @@ public class AppController {
         String action = payload.get("action");
         Pet pet = petService.petAction(petId,action);
         return new ResponseEntity<>(pet, HttpStatus.OK);
+    }
+
+    @GetMapping("/role")
+    public ResponseEntity<Map<String, String>> getUserRole(Authentication authentication) {
+        String role = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElse("USER");
+        return new ResponseEntity<>(Map.of("role", role), HttpStatus.OK);
     }
 
 }

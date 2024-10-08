@@ -38,11 +38,12 @@ public class PersonService {
 
     public String verify(String userName, String userPassword) {
         // public String verify(Person user)
+        Person user = personRepository.findByUserName(userName);
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userName, userPassword));
         // new UsernamePasswordAuthenticationToken(user.getUserName(), user.getUserPassword()))
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(userName);
+            return jwtService.generateToken(userName, user.getUserRole());
             // return jwtService.generateToken(user.getUserName());
         } else {
             return "fail";
@@ -75,6 +76,16 @@ public class PersonService {
         return petRepository.findAll();
     }
 
+    public boolean isAdmin(Long userId){
+        boolean isAdmin = false;
+        Person user = findUser(userId);
+
+        if (user.getUserRole().equals("ADMIN")){
+            isAdmin = true;
+        }
+        return isAdmin;
+    }
+
     public void deleteUser(Long userId){
         personRepository.deleteById(userId);
     }
@@ -85,6 +96,11 @@ public class PersonService {
                 .filter(user -> user.getId().equals(userId))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public Long getUserId(String userName) {
+        Person user = personRepository.findByUserName(userName);
+        return user.getId();
     }
 
 }
