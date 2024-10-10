@@ -108,4 +108,19 @@ public class PersonService {
         return user.getUserRole();
     }
 
+    public Person updateCapacity(Long userid) {
+        Person user = findUser(userid);
+        user.setCapacity("AVAILABLE_PLACES");
+        return personRepository.save(user);
+    }
+
+    public boolean isAdmin(String userName) {
+        String userRole = getRole(userName);
+        if (userRole.equals("ADMIN")){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

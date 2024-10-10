@@ -17,6 +17,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const allPetsButton = document.getElementById('all-pets-btn');
     const petsContainer = document.getElementById('pets-container');
 
+    const deletePetForm = document.getElementById('delete-pet-form');
+    const deletePetButton = document.getElementById('delete-pet-button');
+    const deletePetOption = document.getElementById('delete-pet-option');
+    const cancelDeletePetBtn = document.getElementById('cancel-delete-pet-btn');
+
     let userRole;
 
     showRegisterForm.addEventListener('click', function() {
@@ -44,6 +49,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     cancelCreatePetBtn.addEventListener('click', () => {
         createPetFormContainer.style.display = 'none';
+        mainContent.style.display = 'block';
+    });
+
+    deletePetOption.addEventListener('click', () => {
+        mainContent.style.display = 'none';
+        deletePetForm.style.display = 'block';
+    });
+
+    cancelDeletePetBtn.addEventListener('click', () => {
+        deletePetForm.style.display = 'none';
         mainContent.style.display = 'block';
     });
 
@@ -144,13 +159,11 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Pet created successfully');
             createPetFormContainer.style.display = 'none';
             mainContent.style.display = 'block';
-            // Aquí puedes agregar la lógica para actualizar la lista de mascotas
         } else {
             alert('Failed to create pet, no places available');
         }
     });
 
-    // More event listeners and functions to handle pet interactions can be added here
     // Get pets (USER)
     myPetsButton.addEventListener('click', async () => {
         const token = localStorage.getItem('token');
@@ -199,6 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Display user pets
     function displayPets(pets) {
         petDisplay.style.display = 'block';
         petDisplay.innerHTML = ''; // clean pets
@@ -241,6 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Display all pets
     function displayAllPets(pets) {
         petsContainer.style.display = 'block';
         petsContainer.innerHTML = ''; // clean pets
@@ -271,21 +286,201 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // function fetchPets() {
-    //     const token = localStorage.getItem('token');
-    //     fetch('/petapp/user/pets', {
-    //         method: 'GET',
-    //         headers: {
-    //             'Authorization': 'Bearer ' + token
-    //         }
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => displayPets(data));
-    // }
+    // Delete a pet
+    deletePetButton.addEventListener('click', async () => {
+        const token = localStorage.getItem('token');
+        const petId = document.getElementById('delete-pet-id').value;
+    
+        if (!token) {
+            alert('Please log in first');
+            return;
+        }
+    
+        if (!petId) {
+            alert('Please enter a pet ID');
+            return;
+        }
+    
+        const response = await fetch(`/petapp/pet/delete/${petId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+    
+        if (response.ok) {
+            alert('Pet deleted successfully');
+            deletePetForm.style.display = 'none';
+            mainContent.style.display = 'block';
+            petDisplay.innerHTML = ''; // clean pets
+            petsContainer.innerHTML = ''; // clean pets    
+        } else {
+            if (response.status === 403) {
+                alert('You do not have permission to delete this pet.');
+            } else if (response.status === 404) {
+                alert('Pet not found.');
+            } else {
+                alert('Failed to delete pet.');
+            }
+        }
+    });
+    
+    // Update pet 
+    const updatePetForm = document.getElementById('update-pet-form');
+    const updatePetButton = document.getElementById('update-pet-button');
+    const updateField = document.getElementById('update-field');
+    const updateValue = document.getElementById('update-value');
+    const updateBreed = document.getElementById('update-breed');
+    const updateColor = document.getElementById('update-color');
+    const updatePetOption = document.getElementById('update-pet-option');
+    const cancelUpdatePetBtn = document.getElementById('cancel-update-pet-btn');
 
-    // document.getElementById('view-pets').addEventListener('click', fetchPets);
+    updatePetOption.addEventListener('click', () => {
+        mainContent.style.display = 'none';
+        updatePetForm.style.display = 'block';
+    });
 
-    // Similar setup for delete, update, and interact with pet, ensuring to include the Authorization header
+    cancelUpdatePetBtn.addEventListener('click', () => {
+        updatePetForm.style.display = 'none';
+        mainContent.style.display = 'block';
+    });
+
+    updateField.addEventListener('change', () => {
+        const selectedField = updateField.value;
+        updateValue.style.display = 'none';
+        updateBreed.style.display = 'none';
+        updateColor.style.display = 'none';
+
+        switch (selectedField) {
+            case 'change_name':
+                updateValue.style.display = 'block';
+                break;
+            case 'change_breed':
+                updateBreed.style.display = 'block';
+                break;
+            case 'change_color':
+                updateColor.style.display = 'block';
+                break;
+        }
+    });
+
+    updatePetButton.addEventListener('click', async () => {
+        const token = localStorage.getItem('token');
+        const petId = document.getElementById('update-pet-id').value;
+        const selectedField = updateField.value;
+        let updateValueContent;
+
+        if (!token) {
+            alert('Please log in first');
+            return;
+        }
+
+        if (!petId) {
+            alert('Please enter all required fields');
+            return;
+        }
+
+        switch (selectedField) {
+            case 'change_name':
+                updateValueContent = updateValue.value;
+                break;
+            case 'change_breed':
+                updateValueContent = updateBreed.value;
+                break;
+            case 'change_color':
+                updateValueContent = updateColor.value;
+                break;
+        }
+
+        if (!updateValueContent) {
+            alert('Please enter a value to update');
+            return;
+        }
+
+        const response = await fetch(`/petapp/pet/update/${petId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ update: selectedField, change: updateValueContent })
+        });
+
+        if (response.ok) {
+            alert('Pet updated successfully');
+            updatePetForm.style.display = 'none';
+            mainContent.style.display = 'block';
+            petDisplay.innerHTML = ''; // clean pets
+            petsContainer.innerHTML = ''; // clean pets    
+        } else {
+            if (response.status === 403) {
+                alert('You do not have permission to update this pet.');
+            } else if (response.status === 404) {
+                alert('Pet not found.');
+            } else {
+                alert('Failed to update pet.');
+            }
+        }
+    });
+
+    // Interact with pet 
+    const actionPetForm = document.getElementById('pet-action-form');
+    const actionPetButton = document.getElementById('action-pet-button');
+    const interactPetOption = document.getElementById('interact-pet-option');
+    const cancelActionPetBtn = document.getElementById('cancel-action-pet-btn');
+
+    interactPetOption.addEventListener('click', () => {
+        mainContent.style.display = 'none';
+        actionPetForm.style.display = 'block';
+    });
+
+    cancelActionPetBtn.addEventListener('click', () => {
+        actionPetForm.style.display = 'none';
+        mainContent.style.display = 'block';
+    });
+
+    actionPetButton.addEventListener('click', async () => {
+        const token = localStorage.getItem('token');
+        const petId = document.getElementById('action-pet-id').value;
+        const actionField = document.getElementById('action-field').value;
+
+        if (!token) {
+            alert('Please log in first');
+            return;
+        }
+
+        if (!petId) {
+            alert('Please enter a pet ID');
+            return;
+        }
+
+        const response = await fetch(`/petapp/pet/action/${petId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ action: actionField })
+        });
+
+        if (response.ok) {
+            alert('Action performed successfully');
+            actionPetForm.style.display = 'none';
+            mainContent.style.display = 'block';
+            petDisplay.innerHTML = ''; // clean pets
+            petsContainer.innerHTML = ''; // clean pets    
+        } else {
+            if (response.status === 403) {
+                alert('You do not have permission to interact with this pet.');
+            } else if (response.status === 404) {
+                alert('Pet not found.');
+            } else {
+                alert('Failed to interact with pet.');
+            }
+        }
+    });
+
 
     
 });

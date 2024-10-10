@@ -38,9 +38,9 @@
             <div id="user-options" style="width: 40%; float: left;">
                 <button id="create-pet-btn">Create Pet</button>
                 <button id="my-pets-btn">My Pets</button>
-                <button id="delete-pet">Delete Pet</button>
-                <button id="update-pet">Update Pet</button>
-                <button id="interact-pet">Interact with Your Pet</button>
+                <button id="delete-pet-option">Delete Pet</button>
+                <button id="update-pet-option">Update Pet</button>
+                <button id="interact-pet-option">Interact with Your Pet</button>
                 <button id="all-pets-btn" style="display: none;">All Pets</button>
                 <button id="logout-btn">Logout</button>
             </div>
@@ -71,7 +71,47 @@
                 <button type="button" id="cancel-create-pet-btn">Cancel</button>
             </form>
         </div>
-            
+        <!-- Form to delete a pet -->
+        <div id="delete-pet-form" style="display: none;">
+            <input type="number" id="delete-pet-id" placeholder="Pet ID">
+            <button id="delete-pet-button">Delete Pet</button>
+            <button type="button" id="cancel-delete-pet-btn">Cancel</button>
+        </div>
+        <!-- Update form -->
+        <div id="update-pet-form" style="display: none;">
+            <input type="number" id="update-pet-id" placeholder="Pet ID">
+            <select id="update-field">
+                <option value="change_name">Change Name</option>
+                <option value="change_color">Change Color</option>
+                <option value="change_breed">Change Breed</option>
+            </select>
+            <input type="text" id="update-value" placeholder="New Value" style="display: none;">
+            <select id="update-breed" style="display: none;">
+                <option value="Wolf">Wolf</option>
+                <option value="Fox">Fox</option>
+            </select>
+            <select id="update-color" style="display: none;">
+                <option value="Original">Original</option>
+                <option value="Red">Red</option>
+                <option value="Blue">Blue</option>
+                <option value="Yellow">Yellow</option>
+                <option value="Green">Green</option>
+            </select>
+            <button id="update-pet-button">Update Pet</button>
+            <button id="cancel-update-pet-btn">Cancel</button>
+        </div>
+        <!-- Action form -->
+        <div id="pet-action-form" style="display: none;">
+            <input type="number" id="action-pet-id" placeholder="Pet ID">
+            <select id="action-field">
+                <option value="play">Play</option>
+                <option value="feed">Feed</option>
+                <option value="train">Train</option>
+            </select>
+            <button id="action-pet-button">Interact with Pet</button>
+            <button id="cancel-action-pet-btn">Cancel</button>
+        </div>        
+                    
     </div>
     <script src="script.js"></script>
 </body>

@@ -114,7 +114,13 @@ public class PetService {
         }
     }
 
+    public boolean isOwner(Long userId, Long petId) {
+        Pet pet = findPet(petId);
 
-
-
+        if (userId == pet.getOwnerId()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

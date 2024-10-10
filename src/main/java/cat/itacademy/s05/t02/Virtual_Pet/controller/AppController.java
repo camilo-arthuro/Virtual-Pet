@@ -92,40 +92,72 @@ public class AppController {
     }
 
     @DeleteMapping("/pet/delete/{petId}")
-    public ResponseEntity<Void> deletePet(@PathVariable Long petId){
+    public ResponseEntity<Void> deletePet(@PathVariable Long petId, Authentication authentication){
         try {
-            petService.deletePet(petId);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            String userName = authentication.getName();
+            Long userId = personService.getUserId(userName);
+            boolean isAdmin = personService.isAdmin(userName);
+
+            if (isAdmin || petService.isOwner(userId, petId)){
+                petService.deletePet(petId);
+                personService.updateCapacity(userId);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
     @PutMapping("pet/update/{petId}")
-    public ResponseEntity<Pet> updatePet(@PathVariable Long petId, @RequestBody Map<String, String> payload) {
-        String update = payload.get("update");
-        String change = payload.get("change");
-        Pet pet = petService.updatePet(petId,update,change);
-        return new ResponseEntity<>(pet, HttpStatus.OK);
+    public ResponseEntity<Pet> updatePet(@PathVariable Long petId,
+                                         @RequestBody Map<String, String> payload,
+                                         Authentication authentication) {
+        try {
+            String userName = authentication.getName();
+            Long userId = personService.getUserId(userName);
+            boolean isAdmin = personService.isAdmin(userName);
+            String update = payload.get("update");
+            String change = payload.get("change");
+
+            if (isAdmin || petService.isOwner(userId, petId)){
+                Pet pet = petService.updatePet(petId,update,change);
+                return new ResponseEntity<>(pet, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("pet/action/{petId}")
-    public ResponseEntity<Pet> petAction(@PathVariable Long petId, @RequestBody Map<String, String> payload) {
-        String action = payload.get("action");
-        Pet pet = petService.petAction(petId,action);
-        return new ResponseEntity<>(pet, HttpStatus.OK);
+    public ResponseEntity<Pet> petAction(@PathVariable Long petId,
+                                         @RequestBody Map<String, String> payload,
+                                         Authentication authentication) {
+        try {
+            String userName = authentication.getName();
+            Long userId = personService.getUserId(userName);
+            boolean isAdmin = personService.isAdmin(userName);
+            String action = payload.get("action");
+
+            if (isAdmin || petService.isOwner(userId, petId)){
+                Pet pet = petService.petAction(petId,action);
+                return new ResponseEntity<>(pet, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/role")
     public ResponseEntity<Map<String, String>> getUserRole(Authentication authentication) {
         String userName = authentication.getName();
         String userRole = personService.getRole(userName);
-/*
-        String role = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .findFirst()
-                .orElse("USER");
-*/
+
         return new ResponseEntity<>(Map.of("role", userRole), HttpStatus.OK);
     }
 
