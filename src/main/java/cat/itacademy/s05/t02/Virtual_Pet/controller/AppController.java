@@ -58,12 +58,19 @@ public class AppController {
         String petBreed = payload.get("petBreed");
 
         Person newOwner = petService.createPet(userId,petName,petColor,petBreed);
-        return new ResponseEntity<>(newOwner, HttpStatus.CREATED);
+        if (newOwner != null){
+            return new ResponseEntity<>(newOwner, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
     }
 
 
-    @GetMapping("/user/{userId}/pets")
-    public ResponseEntity<List<Pet>> getUserPets(@PathVariable Long userId){
+    @GetMapping("/user/pets")
+    public ResponseEntity<List<Pet>> getUserPets(Authentication authentication){
+        String userName = authentication.getName();
+        Long userId = personService.getUserId(userName);
+
         List<Pet> petList = personService.getUserPets(userId);
         return new ResponseEntity<>(petList, HttpStatus.OK);
     }
@@ -111,11 +118,15 @@ public class AppController {
 
     @GetMapping("/role")
     public ResponseEntity<Map<String, String>> getUserRole(Authentication authentication) {
+        String userName = authentication.getName();
+        String userRole = personService.getRole(userName);
+/*
         String role = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .findFirst()
                 .orElse("USER");
-        return new ResponseEntity<>(Map.of("role", role), HttpStatus.OK);
+*/
+        return new ResponseEntity<>(Map.of("role", userRole), HttpStatus.OK);
     }
 
 }

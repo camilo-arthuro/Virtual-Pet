@@ -34,41 +34,44 @@
                 <p>Already have an account? <a href="#" id="show-login-form">Login</a></p>
             </form>
         </div>
-        <div id="main-content" style="display: none;">
-            <div id="user-options" style="width: 50%; float: left;">
+        <div id="main-content" style="display: none; justify-content: center; align-items: center; width: 100%;">
+            <div id="user-options" style="width: 40%; float: left;">
                 <button id="create-pet-btn">Create Pet</button>
-                <button id="view-pets">My Pets</button>
+                <button id="my-pets-btn">My Pets</button>
                 <button id="delete-pet">Delete Pet</button>
                 <button id="update-pet">Update Pet</button>
                 <button id="interact-pet">Interact with Your Pet</button>
-                <button id="all-pets" style="display: none;">All Pets</button>
+                <button id="all-pets-btn" style="display: none;">All Pets</button>
                 <button id="logout-btn">Logout</button>
             </div>
-            <div id="pet-display" style="width: 50%; float: right; background-image: url('background/jungle.jpg');">
-                <!-- Pets will be displayed here -->
+            <div id="pet-display" style="width: 40%; float: right; background-image: url('background/jungle.jpg');">
+                <!-- Pets will be displayed here " -->
             </div>
-                <!-- Formulario para crear mascotas -->
-            <div id="create-pet-form" class="form-container" style="display:none;">
-                <h2>Create Pet</h2>
-                <form id="createPetForm">
-                    <input type="text" id="pet-name" placeholder="Pet Name" required>
-                    <select id="pet-breed">
-                        <option value="wolf">Wolf</option>
-                        <option value="fox">Fox</option>
-                    </select>
-                    <select id="pet-color">
-                        <option value="original">Original</option>
-                        <option value="red">Red</option>
-                        <option value="blue">Blue</option>
-                        <option value="yellow">Yellow</option>
-                        <option value="green">Green</option>
-                    </select>
-                    <button type="submit">Create Pet</button>
-                    <button type="button" id="cancel-create-pet-btn">Cancel</button>
-                </form>
+            <div id="pets-container" class="pets-container" style="width: 40%; float: right; display: none;">
+                <!-- Pets will be displayed here  " -->
             </div>
-
         </div>
+        <!-- Form to create pets -->
+        <div id="create-pet-form" class="form-container" style="display:none;">
+            <h2>Create Pet</h2>
+            <form id="createPetForm">
+                <input type="text" id="pet-name" placeholder="Pet Name" required>
+                <select id="pet-breed">
+                    <option value="wolf">Wolf</option>
+                    <option value="fox">Fox</option>
+                </select>
+                <select id="pet-color">
+                    <option value="original">Original</option>
+                    <option value="red">Red</option>
+                    <option value="blue">Blue</option>
+                    <option value="yellow">Yellow</option>
+                    <option value="green">Green</option>
+                </select>
+                <button type="submit">Create Pet</button>
+                <button type="button" id="cancel-create-pet-btn">Cancel</button>
+            </form>
+        </div>
+            
     </div>
     <script src="script.js"></script>
 </body>

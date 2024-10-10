@@ -103,4 +103,9 @@ public class PersonService {
         return user.getId();
     }
 
+    public String getRole(String userName) {
+        Person user = personRepository.findByUserName(userName);
+        return user.getUserRole();
+    }
+
 }

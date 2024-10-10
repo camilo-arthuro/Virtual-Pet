@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PetService {
@@ -26,11 +28,17 @@ public class PetService {
         if (user == null) {
             throw new UserNotFoundException("User not found with id: " + userId);
         }
-        petInfo(pet, petName, petColor, petBreed);
-        pet.setOwnerId(userId);
-        user.getPetList().add(pet);
-
-        return personRepository.save(user);
+        if (user.getPetList().size() < 3){
+            petInfo(pet, petName, petColor, petBreed);
+            pet.setOwnerId(userId);
+            user.getPetList().add(pet);
+            if (user.getPetList().size() == 3) {
+                user.setCapacity("NO_PLACES_AVAILABLE");
+            }
+            return personRepository.save(user);
+        } else {
+            return null;
+        }
     }
 
     public Person findUser(Long userId){

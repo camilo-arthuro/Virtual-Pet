@@ -72,7 +72,60 @@ button:hover {
     position: relative;
 }
 
+.pet-image-container {
+    position: absolute;
+    bottom: 0;
+    display: inline-block;
+    z-index: 2; /* Asegura que las imágenes estén sobre el fondo */
+}
+/*
 .pet-image {
     position: absolute;
-    max-width: 50%;
+    bottom: 0;
+}
+*/
+.pet-info-user {
+    display: none;
+    position: absolute;
+    bottom: 100%; /* Muestra la información sobre la imagen */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    width: max-content;
+}
+
+.pet-image-container:hover .pet-info-user {
+    display: block;
+}
+
+#pets-container {
+    display: flex;
+    flex-direction: column; /* Muestra los elementos en columna */
+    gap: 10px; /* Espacio entre cada mascota */
+    padding: 10px;
+    width: 100%;
+}
+
+.pet-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espacio entre la imagen y la información */
+    background-color: white; /* Fondo blanco para resaltar */
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra para efecto visual */
+}
+
+.pet {
+    width: 80px;
+    height: 80px;
+    object-fit: cover; /* Asegura que la imagen mantenga su proporción */
+}
+
+.pet-info {
+    display: flex;
+    flex-direction: column;
 }
