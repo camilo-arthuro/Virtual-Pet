@@ -31,7 +31,7 @@ public class SecurityConfig {
         return http.csrf(customizer -> customizer.disable()).
                 authorizeHttpRequests(request -> request
                         .requestMatchers("/petapp/login/**", "/petapp/register/**", "/index.html",
-                                "/styles.css", "/script.js", "/images/**", "/background/**").permitAll()
+                                "/styles.css", "/script.js", "/images/**", "/background/**", "/swagger-ui/index.html").permitAll()
                         .anyRequest().authenticated()).
                 httpBasic(Customizer.withDefaults()).
                 sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

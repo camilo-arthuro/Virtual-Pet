@@ -4,6 +4,8 @@ import cat.itacademy.s05.t02.Virtual_Pet.model.Person;
 import cat.itacademy.s05.t02.Virtual_Pet.model.Pet;
 import cat.itacademy.s05.t02.Virtual_Pet.service.PersonService;
 import cat.itacademy.s05.t02.Virtual_Pet.service.PetService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,6 +21,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/petapp")
+@Tag(name = "Pet Controller", description = "Controller for mapping Virtual Pet App")
 public class AppController {
 
     @Autowired
@@ -27,6 +30,7 @@ public class AppController {
     private PetService petService;
 
     @PostMapping("/login")
+    @Operation(summary = "Login a user", description = "Login a user in the web")
     public String login(@RequestBody Map<String, String> payload) {
         String userName = payload.get("userName");
         String userPassword = payload.get("userPassword");
@@ -35,6 +39,7 @@ public class AppController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Register a new user", description = "Register a new user to use the web")
     public ResponseEntity<?> register(@RequestBody Map<String, String> payload) {
         String userName = payload.get("userName");
         String userPassword = payload.get("userPassword");
@@ -49,6 +54,7 @@ public class AppController {
     }
 
     @PostMapping("/create")
+    @Operation(summary = "Create a virtual pet", description = "Create a pet for a user")
     public ResponseEntity<Person> createPet(@RequestBody Map<String, String> payload, Authentication authentication) {
         String userName = authentication.getName();
         Long userId = personService.getUserId(userName);
@@ -67,6 +73,7 @@ public class AppController {
 
 
     @GetMapping("/user/pets")
+    @Operation(summary = "View user's pets", description = "Allows to see the user's pets")
     public ResponseEntity<List<Pet>> getUserPets(Authentication authentication){
         String userName = authentication.getName();
         Long userId = personService.getUserId(userName);
@@ -76,12 +83,15 @@ public class AppController {
     }
 
     @GetMapping("/admin/pets")
+    @Operation(summary = "View all pets in the Database",
+            description = "Allows the ADMIN to see all the pets in the Database")
     public ResponseEntity<List<Pet>> getAllPets() {
         List<Pet> allPets = personService.getAllPets();
         return new ResponseEntity<>(allPets, HttpStatus.OK);
     }
 
     @DeleteMapping("/user/delete/{userId}")
+    @Operation(summary = "Delete a user", description = "Delete a user from the Database")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         try {
             personService.deleteUser(userId);
@@ -92,6 +102,7 @@ public class AppController {
     }
 
     @DeleteMapping("/pet/delete/{petId}")
+    @Operation(summary = "Delete a user's pet", description = "Delete a pet from the Database")
     public ResponseEntity<Void> deletePet(@PathVariable Long petId, Authentication authentication){
         try {
             String userName = authentication.getName();
@@ -111,6 +122,7 @@ public class AppController {
     }
 
     @PutMapping("pet/update/{petId}")
+    @Operation(summary = "Update a pet", description = "Update the pet's info")
     public ResponseEntity<Pet> updatePet(@PathVariable Long petId,
                                          @RequestBody Map<String, String> payload,
                                          Authentication authentication) {
@@ -133,6 +145,7 @@ public class AppController {
     }
 
     @PutMapping("pet/action/{petId}")
+    @Operation(summary = "Interact with a pet", description = "Interact with a user's pet")
     public ResponseEntity<Pet> petAction(@PathVariable Long petId,
                                          @RequestBody Map<String, String> payload,
                                          Authentication authentication) {
@@ -154,6 +167,7 @@ public class AppController {
     }
 
     @GetMapping("/role")
+    @Operation(summary = "get the user's role", description = "Get the user's role for other request")
     public ResponseEntity<Map<String, String>> getUserRole(Authentication authentication) {
         String userName = authentication.getName();
         String userRole = personService.getRole(userName);
